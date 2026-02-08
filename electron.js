@@ -41,6 +41,8 @@ const SING_BX_DOWNLOAD_URLS = {
   }
 };
 
+const NPCAP_DOWNLOAD_URL = 'https://npcap.com/dist/npcap-1.87.exe';
+
 const YAML_PAQET_CLINT_EXAMPLE = `role: "client"
 log:
   level: "info"
@@ -185,10 +187,30 @@ function getBinaryPath(type = 'paqet') {
   return path.join(userDataPath, binaryName);
 }
 
+// Check if Npcap is installed on Windows
+function isNpcapInstalled() {
+  if (process.platform !== 'win32') return true;
+  try {
+    const { execSync } = require('child_process');
+    // Check if npcap service exists
+    execSync('sc query npcap', { stdio: 'ignore' });
+    return true;
+  } catch (e) {
+    // Also check for directory as fallback
+    const system32 = path.join(process.env.WINDIR || 'C:\\Windows', 'System32');
+    return fs.existsSync(path.join(system32, 'Npcap')) || fs.existsSync(path.join(system32, 'wpcap.dll'));
+  }
+}
+
 // Check if required binaries exist
 function checkBinaries() {
   const binaries = ['paqet', 'sing-box'];
   const missing = [];
+
+  // Check for npcap first on Windows
+  if (process.platform === 'win32' && !isNpcapInstalled()) {
+    missing.push('npcap');
+  }
 
   for (const type of binaries) {
     const binaryPath = getBinaryPath(type);
@@ -729,8 +751,12 @@ ipcMain.on('download-binaries', async (event) => {
     const missing = checkBinaries();
 
     for (const type of missing) {
-      const urlList = type === 'paqet' ? PAQET_DOWNLOAD_URLS : SING_BX_DOWNLOAD_URLS;
-      await downloadBinary(type, urlList);
+      if (type === 'npcap') {
+        await downloadAndInstallNpcap();
+      } else {
+        const urlList = type === 'paqet' ? PAQET_DOWNLOAD_URLS : SING_BX_DOWNLOAD_URLS;
+        await downloadBinary(type, urlList);
+      }
       if (setupWindow) {
         setupWindow.webContents.send('download-complete', type);
       }
@@ -746,6 +772,65 @@ ipcMain.on('download-binaries', async (event) => {
     }
   }
 });
+
+async function downloadAndInstallNpcap() {
+  return new Promise((resolve, reject) => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'npcap-download-'));
+    const installerPath = path.join(tempDir, 'npcap-installer.exe');
+
+    console.log('Downloading Npcap from:', NPCAP_DOWNLOAD_URL);
+    const request = net.request(NPCAP_DOWNLOAD_URL);
+
+    request.on('response', (response) => {
+      if (response.statusCode !== 200) {
+        reject(new Error(`HTTP ${response.statusCode}: ${response.statusMessage}`));
+        return;
+      }
+
+      const fileStream = fs.createWriteStream(installerPath);
+      const totalBytes = parseInt(response.headers['content-length'] || '0', 10);
+      let receivedBytes = 0;
+
+      response.on('data', (chunk) => {
+        receivedBytes += chunk.length;
+        fileStream.write(chunk);
+
+        if (setupWindow && totalBytes > 0) {
+          setupWindow.webContents.send('download-progress', {
+            type: 'npcap',
+            percent: (receivedBytes / totalBytes) * 100,
+            transferred: formatBytes(receivedBytes),
+            total: formatBytes(totalBytes)
+          });
+        }
+      });
+
+      response.on('end', () => {
+        fileStream.end();
+        console.log('Npcap downloaded, launching installer...');
+
+        const { spawn } = require('child_process');
+        // Launch installer and wait for it to finish
+        const installer = spawn(installerPath, [], {
+          detached: true,
+          stdio: 'ignore'
+        });
+
+        installer.on('close', (code) => {
+          console.log(`Npcap installer exited with code ${code}`);
+          // Even if code is not 0 (user might have canceled or it needs reboot), 
+          // we continue but log it.
+          resolve();
+        });
+
+        installer.unref();
+      });
+    });
+
+    request.on('error', reject);
+    request.end();
+  });
+}
 
 // File-based Storage paths
 function getConfigPaths() {
