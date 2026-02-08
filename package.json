@@ -27,23 +27,20 @@
       "preload.js",
       "metadata.json",
       "package.json",
-      "index.css"
+      "index.css",
+      "assets/**/*"
     ],
     "mac": {
       "category": "public.app-category.utilities",
       "target": "dmg"
     },
     "win": {
-      "target": "nsis",
-      "icon": "assets/icon.ico"
+      "target": "portable",
+      "icon": "assets/icon.png"
     },
     "linux": {
       "target": "AppImage",
       "category": "Network"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true
     }
   },
   "dependencies": {

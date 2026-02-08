@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog, ipcMain } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain, Menu, Tray } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const { net } = require('electron');
@@ -161,6 +161,11 @@ try {
 
 let setupWindow = null;
 let mainWindow = null;
+let tray = null;
+let isQuitting = false;
+
+// Disable the default menu globally
+Menu.setApplicationMenu(null);
 
 // Determine binary name based on platform
 function getBinaryName(type = 'paqet') {
@@ -382,6 +387,54 @@ function createSetupWindow(missingBinaries) {
   });
 }
 
+function createTray() {
+  const { nativeImage } = require('electron');
+  // Use the app icon if available, otherwise an empty icon to avoid crash
+  const iconPath = path.join(__dirname, 'assets/icon.png');
+  let trayIcon;
+
+  if (fs.existsSync(iconPath)) {
+    trayIcon = nativeImage.createFromPath(iconPath);
+  } else {
+    // Create a 1x1 empty transparent icon as fallback
+    trayIcon = nativeImage.createEmpty();
+  }
+
+  try {
+    tray = new Tray(trayIcon);
+
+    const contextMenu = Menu.buildFromTemplate([
+      {
+        label: 'Show Candy-Paqet', click: () => {
+          if (mainWindow) {
+            mainWindow.show();
+            mainWindow.focus();
+          }
+        }
+      },
+      { type: 'separator' },
+      {
+        label: 'Quit', click: () => {
+          isQuitting = true;
+          app.quit();
+        }
+      }
+    ]);
+
+    tray.setToolTip('Candy-Paqet VPN');
+    tray.setContextMenu(contextMenu);
+
+    tray.on('double-click', () => {
+      if (mainWindow) {
+        mainWindow.show();
+        mainWindow.focus();
+      }
+    });
+  } catch (e) {
+    console.error('Failed to create tray:', e);
+  }
+}
+
 function createMainWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -392,15 +445,25 @@ function createMainWindow() {
     maxWidth: 450,
     maxHeight: 900,
     resizable: false,
+    titleBarStyle: 'hiddenInset',
+    icon: path.join(__dirname, 'assets/icon.png'),
+    show: false,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
       enableRemoteModule: false,
       preload: path.resolve(__dirname, 'preload.js'),
-    },
-    titleBarStyle: 'hiddenInset',
-    icon: path.join(__dirname, 'assets/icon.png'),
-    show: false,
+      devTools: isDev // Disable devtools in production
+    }
+  });
+
+  // Handle window close event
+  mainWindow.on('close', (event) => {
+    if (!isQuitting) {
+      event.preventDefault();
+      mainWindow.hide();
+    }
+    return false;
   });
 
   // Load the app
@@ -1085,6 +1148,7 @@ ipcMain.on('setup-complete', () => {
 // This method will be called when Electron has finished initialization
 app.whenReady().then(() => {
   initStorage();
+  createTray(); // Initialize tray icon
   // Check for binaries on startup
   const missing = checkBinaries();
   if (missing.length === 0) {
@@ -1094,10 +1158,19 @@ app.whenReady().then(() => {
   }
 });
 
-// Quit when all windows are closed, except on macOS
+// Quit when all windows are closed, except we want to stay in tray
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
+  // Do nothing, keep app running in tray
+});
+
+// Final cleanup before quit
+app.on('before-quit', () => {
+  isQuitting = true;
+  if (activeProcess) {
+    activeProcess.kill('SIGTERM');
+  }
+  if (singBoxProcess) {
+    singBoxProcess.kill('SIGTERM');
   }
 });
 
