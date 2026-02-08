@@ -1,5 +1,5 @@
 <div align="center">
-  <img width="1200" height="475" alt="Candy-Paqet Banner" src="https://raw.githubusercontent.com/AmiRCandy/Candy-Paqet/main/screenshots/main.png" />
+  <img width="431" height="894" alt="Candy-Paqet Banner" src="https://raw.githubusercontent.com/AmiRCandy/Candy-Paqet/main/screenshots/main.png" />
   
   # 🍬 Candy-Paqet VPN
   
