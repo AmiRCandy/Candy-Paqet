@@ -35,10 +35,16 @@
 ## 🛠️ Usage
 
 1. **Download**: Grab the latest `Candy-Paqet.exe` from the [Releases](https://github.com/AmiRCandy/Candy-Paqet/releases) page.
-2. **Launch**: Run the executable. It will automatically download the necessary core binaries on first start.
+2. **Launch**: Run the executable. It will automatically download the necessary core binaries and drivers (like Npcap) on first start.
 3. **Configure**: Add your server details (IP, Port, and Secret).
-4. **Connect**: Choose between TUN or SOCKS mode and hit **INITIALIZE**.
+4. **Advanced Settings**: 
+    - The client includes **Automatic Interface Detection**, which auto-detects your primary network interface, GUID, and Local IP.
+    - You can manually override these in the **Advanced Settings** tab for custom configurations.
+5. **Connect**: Choose between TUN or SOCKS mode and hit **INITIALIZE**.
     - *Note: TUN mode requires Administrative privileges to modify network routing.*
+
+### 🖥️ Server Setup
+To create your own high-performance Paqet server, check out the **[CandyHole](https://github.com/AmiRCandy/CandyHole/)** project. It's built to work seamlessly with this client for a complete VPN solution.
 
 ## 💻 Development
 
