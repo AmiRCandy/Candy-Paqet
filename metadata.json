@@ -1,0 +1,22 @@
+{
+  "description": "Candy-Paqet VPN Client",
+  "requestFramePermissions": [],
+  "name": "Candy-Paqet",
+  "paqet": {
+    "downloads": {
+      "win32": {
+        "x64": "https://github.com/hanselime/paqet/releases/download/v1.0.0-alpha.15/paqet-windows-amd64-v1.0.0-alpha.15.zip",
+        "x86": "https://github.com/hanselime/paqet/releases/download/v1.0.0-alpha.15/paqet-windows-386-v1.0.0-alpha.15.zip"
+      },
+      "darwin": {
+        "x64": "https://github.com/hanselime/paqet/releases/download/v1.0.0-alpha.15/paqet-darwin-amd64-v1.0.0-alpha.15.tar.gz",
+        "arm64": "https://github.com/hanselime/paqet/releases/download/v1.0.0-alpha.15/paqet-darwin-arm64-v1.0.0-alpha.15.tar.gz"
+      },
+      "linux": {
+        "x64": "https://github.com/hanselime/paqet/releases/download/v1.0.0-alpha.15/paqet-linux-amd64-v1.0.0-alpha.15.tar.gz",
+        "arm64": "https://github.com/hanselime/paqet/releases/download/v1.0.0-alpha.15/paqet-linux-arm64-v1.0.0-alpha.15.tar.gz",
+        "arm32": "https://github.com/hanselime/paqet/releases/download/v1.0.0-alpha.15/paqet-linux-arm32-v1.0.0-alpha.15.tar.gz"
+      }
+    }
+  }
+}
