@@ -1008,8 +1008,15 @@ ipcMain.on('start-paqet', async (event, data) => {
 
           sendToLogs("Launching sing-box tunnel...");
           const sbArgs = ['run', '-c', tunJsonPath];
+          const sbBinaryPath = getBinaryPath('sing-box');
 
-          singBoxProcess = spawn('sing-box', sbArgs);
+          singBoxProcess = spawn(sbBinaryPath, sbArgs, {
+            env: {
+              ...process.env,
+              ENABLE_DEPRECATED_SPECIAL_OUTBOUNDS: 'true',
+              ENABLE_DEPRECATED_TUN_ADDRESS_X: 'true'
+            }
+          });
 
           singBoxProcess.stdout.on('data', (data) => {
             const output = data.toString().trim();
@@ -1024,11 +1031,23 @@ ipcMain.on('start-paqet', async (event, data) => {
           singBoxProcess.on('close', (code) => {
             sendToLogs(`sing-box terminated (Exit Code ${code})`);
             singBoxProcess = null;
+            // If sing-box closes unexpectedly or during operation, stop everything
+            if (activeProcess) {
+              sendToLogs("sing-box closed. Stopping paqet...");
+              activeProcess.kill('SIGTERM');
+            }
+            if (mainWindow) {
+              mainWindow.webContents.send('paqet-status', 'disconnected');
+            }
           });
 
           singBoxProcess.on('error', (err) => {
             sendToLogs(`sing-box spawn error: ${err.message}`);
             singBoxProcess = null;
+            if (activeProcess) activeProcess.kill('SIGTERM');
+            if (mainWindow) {
+              mainWindow.webContents.send('paqet-status', 'error', `sing-box error: ${err.message}`);
+            }
           });
         } catch (err) {
           sendToLogs(`Failed to initialize sing-box: ${err.message}`);
