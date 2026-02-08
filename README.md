@@ -1,88 +1,85 @@
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+  <img width="1200" height="475" alt="Candy-Paqet Banner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+  
+  # 🍬 Candy-Paqet VPN
+  
+  [![Build and Release](https://github.com/AmiRCandy/Candy-Paqet/actions/workflows/build.yml/badge.svg)](https://github.com/AmiRCandy/Candy-Paqet/actions/workflows/build.yml)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+  [![Platform: Windows](https://img.shields.io/badge/Platform-Windows-blue.svg)](https://www.microsoft.com/windows)
+
+  **A high-performance, cyberpunk-infused VPN client for Windows.**  
+  *Bridging the gap between raw power and neon aesthetics.*
 </div>
 
-# Candy-Paqet VPN
+---
 
-A sleek, cyberpunk-themed VPN client desktop application built with React, TypeScript, and Electron.
+## 🚀 Overview
 
-View your app in AI Studio: https://ai.studio/apps/drive/15kq5P1HWbe2wMX07UKp5EmI0-6LRyJov
+**Candy-Paqet** is a professional-grade VPN client focused on speed, security, and a premium user experience. Built on top of the powerful `paqet` engine and `sing-box` tunneling service, it provides a seamless interface for managing complex network connections with a stylish "Cyber HUD" interface.
 
-## Features
+## ✨ Core Features
 
-- 🛡️ **Cyberpunk UI** - Retro terminal aesthetic with scanlines and glow effects
-- 🌐 **Multi-Server Support** - Configure and manage multiple VPN servers
-- 🔐 **Secure Connections** - AES-256-GCM encryption simulation
-- 📊 **Real-time Monitoring** - Connection status and uptime tracking
-- 🌓 **Dark/Light Mode** - Toggle between cyber and clean themes
-- 📱 **Cross-Platform** - Runs on Windows, macOS, and Linux
-- 🔧 **Auto-Setup** - Automatically downloads required paqet binary on first run
-- 📥 **Progress Tracking** - Visual download progress with detailed status
+- 🛠️ **Dual Connection Modes**:
+    - **TUN Mode**: Global system-level tunneling using `sing-box` for full device protection.
+    - **SOCKS5 Proxy**: Lightweight application-level proxying for specific workflows.
+- ⚡ **Turbo-Charged Engine**: Leverages `paqet` (KCP/TCP) for low-latency connections even in unstable network environments.
+- 💾 **Portable & Lightweight**: Distributed as a single, zero-install executable. Just download and run.
+- 🎨 **Rich Cyberpunk UI**:
+    - Retro-futuristic HUD with scanline effects and neon glow.
+    - Real-time terminal logs and connection analytics.
+    - Interactive Dashboard with uptime tracking.
+- 🔧 **Zero-Config Setup**: Automatically detects, downloads, and initializes pre-compiled `paqet` and `sing-box` binaries on the first run.
+- 📥 **Background Ready**: Seamlessly minimizes to the System Tray to keep your connection alive without cluttering your workspace.
+- 🔐 **Privacy First**: Built-in support for encrypted DNS (DoH) via customizable DNS servers.
 
-## Development
+## 🛠️ Usage
 
-**Prerequisites:** Node.js
+1. **Download**: Grab the latest `Candy-Paqet.exe` from the [Releases](https://github.com/AmiRCandy/Candy-Paqet/releases) page.
+2. **Launch**: Run the executable. It will automatically download the necessary core binaries on first start.
+3. **Configure**: Add your server details (IP, Port, and Secret).
+4. **Connect**: Choose between TUN or SOCKS mode and hit **INITIALIZE**.
+    - *Note: TUN mode requires Administrative privileges to modify network routing.*
 
-### Web Version (Development)
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the web app:
-   ```bash
-   npm run dev
-   ```
+## 💻 Development
 
-### Desktop Version (Electron)
+### Prerequisites
+- [Node.js](https://nodejs.org/) (v18+)
+- [Git](https://git-scm.com/)
 
-#### Development Mode
-Run both the Vite dev server and Electron simultaneously:
+### Getting Started
 ```bash
+# Clone the repository
+git clone https://github.com/AmiRCandy/Candy-Paqet.git
+cd Candy-Paqet
+
+# Install dependencies
+npm install
+
+# Run in Development mode (Vite + Electron)
 npm run electron-dev
 ```
 
-#### Production Build
-Build and package for your platform:
+### Building for Production
 ```bash
-# Build for current platform
-npm run electron-pack
-
-# Build for specific platforms
-npm run electron-pack-win    # Windows
-npm run electron-pack-mac    # macOS
-npm run electron-pack-linux  # Linux
+# Generate Portable Windows EXE
+npm run electron-pack-win
 ```
 
-#### Manual Testing
-After building, you can also run the packaged app directly:
-```bash
-npm run electron
-```
+## 🏗️ Tech Stack
 
-### Binary Download Configuration
+- **Core Engine**: [paqet](https://github.com/hanselime/paqet)
+- **Tunneling**: [sing-box](https://github.com/SagerNet/sing-box)
+- **Frontend**: React 19 + TypeScript + Lucide Icons
+- **Desktop Wrapper**: Electron 32
+- **Styling**: Vanilla CSS with Cyber-Themes
+- **CI/CD**: GitHub Actions
 
-The app automatically checks for the `paqet` binary on startup. Download URLs are configured in `metadata.json`:
+## 📄 License
 
-```json
-{
-  "paqet": {
-    "downloads": {
-      "win32": {
-        "x64": "https://your-domain.com/downloads/paqet-windows-x64.exe",
-        "x86": "https://your-domain.com/downloads/paqet-windows-x86.exe"
-      },
-      "darwin": {
-        "x64": "https://your-domain.com/downloads/paqet-macos-x64",
-        "arm64": "https://your-domain.com/downloads/paqet-macos-arm64"
-      },
-      "linux": {
-        "x64": "https://your-domain.com/downloads/paqet-linux-x64",
-        "arm64": "https://your-domain.com/downloads/paqet-linux-arm64"
-      }
-    }
-  }
-}
-```
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-**Important**: Update these URLs to point to your actual paqet binary releases before distributing the app.
+---
+
+<div align="center">
+  Developed with ❤️ by <a href="https://github.com/AmiRCandy">AmiRCandy</a>
+</div>
