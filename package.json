@@ -1,5 +1,5 @@
 {
-  "name": "Candy-Paqet-vpn",
+  "name": "Candy-Paqet",
   "private": true,
   "version": "1.0.5",
   "main": "electron.js",
@@ -16,8 +16,8 @@
     "electron-pack-linux": "npm run build && electron-builder --linux"
   },
   "build": {
-    "appId": "com.cybertunnel.vpn",
-    "productName": "Candy-Paqet VPN",
+    "appId": "com.candypaqet.vpn",
+    "productName": "Candy-Paqet",
     "directories": {
       "output": "dist-electron"
     },
