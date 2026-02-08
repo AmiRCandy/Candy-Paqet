@@ -1,7 +1,7 @@
 {
   "name": "Candy-Paqet",
   "private": true,
-  "version": "1.0.5",
+  "version": "1.0.6",
   "main": "electron.js",
   "homepage": "./",
   "scripts": {
